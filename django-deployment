@@ -1,0 +1,147 @@
+DevOps
+admin
+admin123
+mydb
+m/c admin1234
+Python -setup-on-
+
+apt update
+apt -y upgrade
+python3 -V
+ls
+ 
+Locate project directory
+
+apt install -y python3-venv
+
+python3 -m venv venv
+
+source venv/bin/activate
+ls
+
+pip3 install -r requirements.txt
+
+pip3 freeze > requirements.txt , to check dependencies or libraries are  installed or not.
+
+pip3 install package_name (optional) , if required then implement it with preferred package or library.
+
+python3 manage.py makemigrations
+
+python3 manage.py migrate
+
+python3 manage.py migrate --run-syncdb  : if required then implement it 
+
+python3 manage.py createsuperuser
+
+root
+
+root@mail.com
+
+1234
+
+python3 manage.py runserver 0.0.0.0:8000
+
+
+copy the path from terminal
+
+pip3 install gunicorn
+
+sudo gunicorn insurancemanagement.wsgi:application --bind 0.0.0.0:8000
+
+*note: Implement the file name which available on project directory where wsgi.py available.
+
+Example* : gunicorn api.wsgi:application --bind 0.0.0.0:8000
+
+After binding the wsgi via gunicorn, deactivate virtual environment by using this following command.
+ 
+deactivate venv
+
+sudo apt-get install nginx ( if not installed)
+
+nginx -V (check version)
+
+now implement as following:
+
+create socket file
+
+sudo vim /etc/systemd/system/gunicorn.socket
+
+[Unit]
+Description=gunicorn socket
+
+[Socket]
+ListenStream=/run/gunicorn.sock
+
+[Install]
+WantedBy=sockets.target
+
+_____________________________
+
+create service file
+
+sudo vim /etc/systemd/system/gunicorn.service
+
+[Unit]
+Description=gunicorn daemon
+Requires=gunicorn.socket
+After=network.target
+
+[Service]
+User=root
+Group=www-data
+
+WorkingDirectory=/home/ubuntu/insurancemanagement-master
+ExecStart=gunicorn --workers 3 --bind unix:/run/gunicorn.sock insurancemanagement.wsgi:application
+
+[Install]
+WantedBy=multi-user.target
+
+____________________________________________
+
+sudo systemctl start gunicorn.socket
+sudo systemctl enable gunicorn.socket
+sudo systemctl status gunicorn.socket
+sudo systemctl start gunicorn.service
+sudo systemctl enable gunicorn.service
+sudo systemctl status gunicorn.service
+systemctl stop mailpro.service
+_____________________________________________
+
+cd
+
+cd /
+
+cd /etc/nginx/sites-available/
+
+vim /etc/nginx/sites-available/file_name
+
+for full stack
+
+server {
+    listen 80;
+    server_name 107.20.2.127;
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location /static/ {
+        alias /home/ubuntu/insurancemanagement-master/static/; 
+       try_files $uri =404;
+    }
+
+    location / {
+        include proxy_params;
+        proxy_pass http://unix:/run/gunicorn.sock;
+    }
+}
+
+save the above file (*)
+
+cdfile_nameetc/nginx/sites-enabled/
+
+
+ln -s /etc/nginx/sites-available/contractpro /etc/nginx/sites-enabled/
+
+sudo nginx -t
+
+sudo apt-get install python3-certbot-nginx
+
+certbot --nginx
